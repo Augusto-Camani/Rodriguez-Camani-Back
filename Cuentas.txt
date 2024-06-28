@@ -1,0 +1,16 @@
+
+
+Admin: 
+
+User: enano
+Pass: Subzeroa1
+
+Barber:
+
+User : barbero1
+Pass: Barbero1
+
+Client:
+
+User: cliente1
+Pass: Cliente1
