@@ -11,7 +11,7 @@ public class Appointment
     [Required]
     public DateTime DateTime { get; set; }
     public TimeSpan StartTime { get; set; }
-    public Service Service { get; set; }
+    public string Service { get; set; }
 
     [ForeignKey("ClientId")]
     public Client Client { get; set; }
