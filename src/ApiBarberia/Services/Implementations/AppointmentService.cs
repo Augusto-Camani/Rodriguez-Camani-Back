@@ -17,6 +17,11 @@ namespace ApiBarberia;
             _mapper = mapper;
             _appointmentScheduleAdapter = appointmentScheduleAdapter;
         }
+        
+        public IEnumerable<Appointment> GetAppointmentByUserId(int userId)
+        {
+            return _appointmentRepository.GetAppointmnetsByUserId(userId);
+        }
 
         public IEnumerable<Appointment> GetAvailableBarberAppointmentsByDate(int barberId, DateTime dateTime)
         {

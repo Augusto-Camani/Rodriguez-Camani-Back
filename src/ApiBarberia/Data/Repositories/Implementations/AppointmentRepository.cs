@@ -7,8 +7,12 @@
      public IEnumerable<Appointment> GetAvailableBarberAppointmentsByDate(int barberId , DateTime dateTime)
      {
         return _context.Appointments.Where(a => a.BarberId == barberId && a.BarberAvailability.DayOfTheWeek.Equals(dateTime.DayOfWeek));
+     }  
+    
+     public IEnumerable<Appointment> GetAppointmnetsByUserId(int userId)
+     {
+        return _context.Appointments.Where(a => a.ClientId == userId);
      }
-
      public Appointment GetAppointmentById(int appointmentId)
      {
          return _context.Appointments.SingleOrDefault(a => a.AppointmentId == appointmentId);

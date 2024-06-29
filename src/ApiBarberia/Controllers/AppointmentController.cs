@@ -14,6 +14,13 @@ namespace ApiBarberia;
             _appointmentService = appointmentService;
         }
 
+        [HttpGet("get-appointment-by-userId/{userId}")]
+        [Authorize(Policy = "ClientPolicy")]
+        public IActionResult GetAppointmentByUserId([FromRoute] int userId)
+        {
+            return Ok(_appointmentService.GetAppointmentByUserId(userId));
+        }
+
         [HttpGet("barber-appointments")]
         [Authorize(Policy = "BothPolicy")]
         public IActionResult GetAppointmentsByBarberId([FromQuery] int barberId)
