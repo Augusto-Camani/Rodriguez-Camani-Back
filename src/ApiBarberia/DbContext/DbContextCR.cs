@@ -72,7 +72,7 @@ public class DbContextCR : DbContext
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.ToTable("Reviwes");
+            entity.ToTable("Reviews");
             entity.HasKey(e => e.ReviewId);
             entity.HasOne(re => re.Reply)
                 .WithOne(rp => rp.Review)
