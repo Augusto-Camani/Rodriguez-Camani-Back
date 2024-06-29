@@ -3,129 +3,111 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApiBarberia;
 
-[Route("[Controller]")]
-[ApiController]
-public class AppointmentController : ControllerBase
-{
-    private readonly IAppointmentService _appointmentService;
-    public AppointmentController(IAppointmentService appointmentService)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AppointmentController : ControllerBase
     {
-        _appointmentService = appointmentService;
-    }
+        private readonly IAppointmentService _appointmentService;
 
-    [HttpGet("get-barber-appointments")]
-    [Authorize(Policy = "BothPolicy")]
-    public IActionResult GetAvailableBarberAppointmentsByDate([FromQuery] int id, [FromBody] DateTime datetime)
-    {
-        try
+        public AppointmentController(IAppointmentService appointmentService)
         {
-            var appointments = _appointmentService.GetAvailableBarberAppointmentsByDate(id, datetime);
-            if (appointments == null || !appointments.Any())
+            _appointmentService = appointmentService;
+        }
+
+        [HttpGet("barber-appointments")]
+        [Authorize(Policy = "BothPolicy")]
+        public IActionResult GetAppointmentsByBarberId([FromQuery] int barberId)
+        {
+            try
             {
-                return NotFound("No se encontraron turnos disponibles del barbero en la fecha especificada.");
+                var appointments = _appointmentService.GetAppointmentsByBarberId(barberId);
+                if (appointments == null || !appointments.Any())
+                {
+                    return NotFound("No se encontraron turnos del barbero.");
+                }
+                return Ok(appointments);
             }
-            return Ok(appointments);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
-
-    [HttpPost("create-appointment")]
-    [Authorize(Policy = "ClientPolicy")]
-    public IActionResult CreateAppointment([FromBody] AppointmentDTO appointmentDTO)
-    {
-        try
-        {
-            _appointmentService.CreateAppointment(appointmentDTO);
-            return Created();
-
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest($"Error: {ex.Message}");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
-
-    [HttpGet("get-appointments-by-barberId")]
-    [Authorize(Policy = "BothPolicy")]
-    public IActionResult GetAppointmentsByBarberId([FromQuery] int barberId)
-    {
-        try
-        {
-            var appointments = _appointmentService.GetAppointmentsByBarberId(barberId);
-            if (appointments == null || !appointments.Any())
+            catch (Exception ex)
             {
-                return NotFound("No se encontraron turnos del barbero.");
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
-            return Ok(appointments);
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
 
-    [HttpGet("get-appointment-by-id")]
-    [Authorize(Policy = "BothPolicy")]
-    public IActionResult GetAppointmentById([FromQuery] int appointmentId)
-    {
-        try
+        [HttpGet("available-slots")]
+        [Authorize(Policy = "BothPolicy")]
+        public IActionResult GetAvailableSlotsForBarberAndDate([FromQuery] int barberId, [FromQuery] DateTime date)
         {
-            var appointment = _appointmentService.GetAppointmentById(appointmentId);
-            if (appointment == null)
+            try
             {
-                return NotFound("No se encontró ningun turno.");
+                var slots = _appointmentService.GetAvailableBarberAppointmentsByDate(barberId, date);
+                if (slots == null || !slots.Any())
+                {
+                    return NotFound("No se encontraron slots disponibles para el barbero en la fecha especificada.");
+                }
+                return Ok(slots);
             }
-            return Ok(appointment);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
 
-    [HttpGet("get-appointments-by-barber-and-date")]
-    [Authorize(Policy = "BothPolicy")]
-    public IActionResult GetAppointmentsByBarberAndDate([FromQuery] int barberId, DateTime date)
-    {
-        try
+        [HttpGet("appointment/{appointmentId}")]
+        [Authorize(Policy = "BothPolicy")]
+        public IActionResult GetAppointmentById([FromRoute] int appointmentId)
         {
-            var appointments = _appointmentService.GetAppointmentsByBarberAndDate(barberId, date);
-            if (appointments == null || !appointments.Any())
+            try
             {
-                return NotFound("No se encontraron turnos del barbero en la fecha especificada.");
+                var appointment = _appointmentService.GetAppointmentById(appointmentId);
+                if (appointment == null)
+                {
+                    return NotFound("No se encontró el turno especificado.");
+                }
+                return Ok(appointment);
             }
-            return Ok(appointments);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
 
-    [HttpDelete("delete-appointment/{appointmentId}")]
-    [Authorize(Policy = "BothPolicy")]
-    public IActionResult DeleteAppointment([FromRoute] int appointmentId)
-    {
-        try
+        [HttpPost("create-appointment")]
+        [Authorize(Policy = "ClientPolicy")]
+        public IActionResult CreateAppointment([FromBody] AppointmentDTO appointmentDTO)
         {
-            var appointment = _appointmentService.GetAppointmentById(appointmentId);
-            if (appointment == null)
+            try
             {
-                return NotFound("No se encontro el turno.");
+                _appointmentService.CreateAppointment(appointmentDTO);
+                return Created("api/appointment/create-appointment", appointmentDTO); // Puedes ajustar la URL de retorno si es necesario
             }
-            _appointmentService.DeleteAppointment(appointmentId);
-            return NoContent();
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Error al crear el turno: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
-        catch (Exception ex)
+
+        [HttpDelete("delete-appointment/{appointmentId}")]
+        [Authorize(Policy = "BothPolicy")]
+        public IActionResult DeleteAppointment([FromRoute] int appointmentId)
         {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
+            try
+            {
+                var existingAppointment = _appointmentService.GetAppointmentById(appointmentId);
+                if (existingAppointment == null)
+                {
+                    return NotFound("No se encontró el turno especificado.");
+                }
+
+                _appointmentService.DeleteAppointment(appointmentId);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
     }
-}
