@@ -74,9 +74,6 @@ public class DbContextCR : DbContext
         {
             entity.ToTable("Reviews");
             entity.HasKey(e => e.ReviewId);
-            entity.HasOne(re => re.Appointment)
-                .WithOne(ap => ap.Review)
-                .HasForeignKey<Appointment>(ap => ap.AppointmentId);
         });
 
 

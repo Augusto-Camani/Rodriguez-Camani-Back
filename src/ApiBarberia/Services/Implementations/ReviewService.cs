@@ -47,8 +47,8 @@ namespace ApiBarberia;
                    throw new Exception("Review NO encontrada");
                }
 
-               existingReview.Description = reviewDTO.ClientComment;
-               existingReview.Rating = reviewDTO.ClientRating;
+               existingReview.Description = reviewDTO.Description;
+               existingReview.Rating = reviewDTO.Rating;
                _reviewRepository.UpdateReview(existingReview);
         }
     }

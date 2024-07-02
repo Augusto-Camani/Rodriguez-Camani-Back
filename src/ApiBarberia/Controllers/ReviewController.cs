@@ -43,7 +43,7 @@ namespace ApiBarberia;
          return Ok(_reviewService.GetReviewById(reviewId));
      }
 
-     [HttpGet("delete-review/{reviewId}")]
+     [HttpDelete("delete-review/{reviewId}")]
      [Authorize(Policy = "AdminPolicy")]
      public IActionResult DeleteReview(int reviewId)
      {

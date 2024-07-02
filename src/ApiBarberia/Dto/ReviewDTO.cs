@@ -2,9 +2,9 @@
 
 public class ReviewDTO
 {
-    public int AppointmentId { get; set; }
-    public string ClientUsername { get; set; }
-    public decimal ClientRating { get; set; }
-    public string ClientComment { get; set; }
+    public int UserId { get; set; }
+    public string UserName { get; set; }
+    public decimal Rating { get; set; }
+    public string Description { get; set; }
     public DateTime CreationDate { get; set; } = DateTime.Now;
 }
