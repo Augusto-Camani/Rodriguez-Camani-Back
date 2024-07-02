@@ -18,9 +18,9 @@
          return _context.Appointments.SingleOrDefault(a => a.AppointmentId == appointmentId);
      }
 
-     public Appointment GetAppointmentByBarberId(int barberId)
+     public IEnumerable<Appointment> GetAppointmentByBarberId(int barberId)
      {
-         return _context.Appointments.SingleOrDefault(a => a.BarberId == barberId);
+         return _context.Appointments.Where(a => a.BarberId == barberId);
      }
      public void CreateAppointment(Appointment appointment)
      {
