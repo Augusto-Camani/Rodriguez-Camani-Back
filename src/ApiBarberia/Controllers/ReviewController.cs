@@ -16,7 +16,7 @@ namespace ApiBarberia;
      }
 
      [HttpGet("get-reviews")]
-     [Authorize(Policy = "BothPolicy")]
+     [AllowAnonymous]
      public IActionResult GetReviews()
      {
          return Ok(_reviewService.GetReviews());

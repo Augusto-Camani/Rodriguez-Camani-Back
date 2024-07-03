@@ -13,13 +13,11 @@ public class UserController : ControllerBase
         _userService = userService;
     }
     
-    
     [HttpGet("get-user")]
     [Authorize(Policy = "BothPolicy")]
     public IActionResult GetUserById([FromQuery] int id){
         return Ok(_userService.GetUserById(id));
     }
-
     
     [HttpGet("get-user-by-name")]
     [Authorize(Policy = "AdminPolicy")]
@@ -27,7 +25,6 @@ public class UserController : ControllerBase
         return Ok(_userService.GetUserByName(name));
     }
 
-    
     [HttpGet("get-users")]
     [Authorize(Policy = "AdminPolicy")]
     public IActionResult GetUsers(){
